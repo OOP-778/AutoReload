@@ -1,0 +1,4 @@
+name: AutoReload
+main: com.oop.autoreload.AutoReload
+author: OOP-778
+version: 1.0

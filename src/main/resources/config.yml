@@ -1,0 +1,5 @@
+# How often should it check for file updates (milis)
+file check timer: 1000
+
+# There's three handle types: plugin-reload, server-reload, server-restart
+handler type: "plugin-reload"
