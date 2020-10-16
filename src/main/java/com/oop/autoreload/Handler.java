@@ -9,12 +9,10 @@ import org.bukkit.event.Event;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredListener;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.plugin.SimplePluginManager;
+import org.bukkit.plugin.java.JavaPluginLoader;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
@@ -28,7 +26,9 @@ public class Handler {
             switch (type) {
                 case PLUGIN_RELOAD:
                     try {
-                        unload(file);
+                        try {
+                            unload(file);
+                        } catch (Throwable throwable) {}
                         load(file);
                         autoReload.getOLogger().print("Reloaded {} using {} handler", file.getName().replace(".jar", ""), type.name().toLowerCase());
                     } catch (Throwable throwable) {
@@ -39,6 +39,7 @@ public class Handler {
                     autoReload.getOLogger().print("Reloaded {} using {} handler", file.getName().replace(".jar", ""), type.name().toLowerCase());
                     Bukkit.reload();
                     break;
+
                 case SERVER_RESTART:
                     autoReload.getOLogger().print("Reloaded {} using {} handler", file.getName().replace(".jar", ""), type.name().toLowerCase());
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "restart");
@@ -161,9 +162,7 @@ public class Handler {
         ClassLoader cl = plugin.getClass().getClassLoader();
 
         if (cl instanceof URLClassLoader) {
-
             try {
-
                 Field pluginField = cl.getClass().getDeclaredField("plugin");
                 pluginField.setAccessible(true);
                 pluginField.set(cl, null);
@@ -181,8 +180,15 @@ public class Handler {
             } catch (IOException ex) {
                 throw new IllegalStateException("Failed to unload Class Loader of " + plugin.getName(), ex);
             }
-
         }
+
+        try {
+            Field f = ClassLoader.class.getDeclaredField("classes");
+            f.setAccessible(true);
+
+            Vector<Class> classes = (Vector<Class>) f.get(cl);
+            classes.clear();
+        } catch (Exception exception) {}
 
         // Will not work on processes started with the -XX:+DisableExplicitGC flag, but lets try it anyway.
         // This tries to get around the issue where Windows refuses to unlock jar files that were previously loaded into the JVM.

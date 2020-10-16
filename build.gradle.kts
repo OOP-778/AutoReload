@@ -16,6 +16,8 @@ dependencies {
     compileOnly("org.spigotmc:spigot:1.12.2-R0.1-SNAPSHOT")
     implementation("com.oop.orangeengine:file:4.8")
     implementation("com.oop.orangeengine:engine:4.8")
+    implementation("com.oop.orangeengine:command:4.8")
+    implementation("com.oop.orangeengine:message:4.8")
 }
 
 tasks {
@@ -23,7 +25,7 @@ tasks {
         destinationDirectory.set(file("out"))
         archiveFileName.set("AutoReload.jar")
 
-        relocate("com.oop.orangengine", "com.oop.autoreload.engine")
+        relocate("com.oop.orangeengine", "com.oop.autoreload.engine")
     }
     withType<ProcessResources> {
         eachFile {

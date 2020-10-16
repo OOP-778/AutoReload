@@ -1,5 +1,6 @@
 package com.oop.autoreload;
 
+import com.oop.orangeengine.command.CommandController;
 import com.oop.orangeengine.file.OFile;
 import com.oop.orangeengine.main.plugin.EnginePlugin;
 import com.oop.orangeengine.main.task.ClassicTaskController;
@@ -7,7 +8,6 @@ import com.oop.orangeengine.main.task.TaskController;
 import com.oop.orangeengine.yaml.Config;
 
 public class AutoReload extends EnginePlugin {
-
     public HandlerType type;
 
     @Override
@@ -28,6 +28,9 @@ public class AutoReload extends EnginePlugin {
 
         new Checker(this).delay(updateCheckTimer);
         getOLogger().print("Started checker");
+
+        CommandController cmdController = new CommandController();
+        cmdController.register(new AutoReloadCommand());
     }
 
     @Override
